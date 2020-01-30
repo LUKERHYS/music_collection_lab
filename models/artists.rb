@@ -10,10 +10,7 @@ class Artist
     @name = options['name']
   end
 
-  def self.delete_all()
-    sql = "DELETE FROM artists"
-    SqlRunner.run(sql)
-  end
+  ## CLASS METHODS
 
   def self.all()
     sql = "SELECT * FROM artists"
@@ -21,14 +18,30 @@ class Artist
     return artists.map{|artist| Artist.new(artist)}
   end
 
+  def self.delete_all()
+    sql = "DELETE FROM artists"
+    SqlRunner.run(sql)
+  end
+
+  def self.find(id)
+    sql = "SELECT * FROM
+    artists
+    WHERE id = $1"
+    values = [id]
+    results = SqlRunner.run(sql, values)
+    artists_hash = results.first
+    artist = Artist.new(artists_hash)
+    return artist
+  end
+
+##INSTANCE METHODS
+
 def save()
-    sql = "INSERT INTO artists(
+    sql = "INSERT INTO artists (
     name
-  )
-  VALUES(
+  ) VALUES (
     $1
-  )
-  RETURNING id"
+  ) RETURNING id"
   values = [@name]
   results = SqlRunner.run(sql, values)
   @id = results[0]['id'].to_i
@@ -42,6 +55,14 @@ def albums()
   return results.map{|album| Album.new(album)}
 end
 
-
+def update()
+  sql = "UPDATE albums SET (
+  title, genre, artist_id
+  ) = (
+  $1, $2, $3
+  ) WHERE id = $4"
+  values = [@title, @genre, @artist_id, @id]
+  SqlRunner.run(sql, values)
+end
 
 end

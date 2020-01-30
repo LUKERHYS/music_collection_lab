@@ -11,22 +11,7 @@ class Album
     @genre = options['genre']
     @artist_id = options['artist_id'].to_i
   end
-
-  def save()
-      sql = "INSERT INTO albums(
-      title,
-      genre,
-      artist_id
-    )
-    VALUES(
-      $1, $2, $3
-    )
-    RETURNING id"
-    values = [@title, @genre, @artist_id]
-    results = SqlRunner.run(sql, values)
-    @id = results[0]['id'].to_i
-  end
-
+## CLASS METHODS
   def self.all()
     sql = "SELECT * FROM albums"
     albums = SqlRunner.run(sql)
@@ -34,9 +19,33 @@ class Album
   end
 
   def self.delete_all()
-  sql = "DELETE FROM albums"
-  SqlRunner.run(sql)
-end
+    sql = "DELETE FROM albums"
+    SqlRunner.run(sql)
+  end
+
+  def self.find(id)
+    sql = "SELECT * FROM
+    albums
+    WHERE id = $1"
+    values = [id]
+    results = SqlRunner.run(sql, values)
+    album_hash = results.first
+    album = PizzaOrder.new(album_hash)
+    return album
+  end
+
+##INSTANCE METHODS
+
+  def save()
+      sql = "INSERT INTO albums (
+      title, genre, artist_id
+    ) VALUES (
+      $1, $2, $3
+    ) RETURNING id"
+    values = [@title, @genre, @artist_id]
+    results = SqlRunner.run(sql, values)
+    @id = results[0]['id'].to_i
+  end
 
   def artist()
     sql = "SELECT * FROM artists
@@ -50,18 +59,12 @@ end
 
   def update()
     sql = "UPDATE albums SET (
-    title,
-    genre,
-    artist_id
-    )
-    = (
+    title, genre, artist_id
+    ) = (
     $1, $2, $3
-    )
-    WHERE id = $4"
+    ) WHERE id = $4"
     values = [@title, @genre, @artist_id, @id]
     SqlRunner.run(sql, values)
   end
-
-
 
 end
