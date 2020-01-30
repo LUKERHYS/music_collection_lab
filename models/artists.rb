@@ -10,6 +10,11 @@ class Artist
     @name = options['name']
   end
 
+  def self.delete_all()
+    sql = "DELETE FROM artists"
+    SqlRunner.run(sql)
+  end
+
 def save()
     sql = "INSERT INTO artists(
     name
@@ -22,13 +27,6 @@ def save()
   results = SqlRunner.run(sql, values)
   @id = results[0]['id'].to_i
 end
-
-def self.all()
-  sql = "SELECT * FROM artists"
-  artists = SqlRunner.run(sql)
-  return artists.map{|artist| Artist.new(artist)}
-end
-
 
 def albums()
   sql = "SELECT * FROM albums
