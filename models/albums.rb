@@ -1,9 +1,9 @@
-require('pg')
+require("pg")
 require_relative('../db/sql_runner')
 
 class Album
 
-  attr_reader :id, :title, :genre, :artist_id
+  attr_accessor :id, :title, :genre, :artist_id
 
   def initialize(options)
     @id = options['id'].to_i() if options['id']
@@ -55,9 +55,9 @@ end
     artist_id
     )
     = (
-    $1, $2
+    $1, $2, $3
     )
-    WHERE id = $3"
+    WHERE id = $4"
     values = [@title, @genre, @artist_id, @id]
     SqlRunner.run(sql, values)
   end
